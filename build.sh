@@ -25,23 +25,13 @@ tar -zxf ohos-sdk.tar.gz -C /opt/ohos-sdk
 cd /opt/ohos-sdk/ohos
 busybox unzip -q native-*.zip
 
-# 把 ld.lld 从软链接的形态改成封装脚本的形态，以实现默认启用链接器签名
-#（也就是这个特性：https://gitcode.com/openharmony/third_party_llvm-project/pull/882）
-llvm_bin="/opt/ohos-sdk/ohos/native/llvm/bin"
-rm $llvm_bin/ld.lld
-cat <<EOF > $llvm_bin/ld.lld
-#!/bin/sh
-exec -a "\$0" $llvm_bin/lld --code-sign "\$@"
-EOF
-chmod 0755 $llvm_bin/*
-
 # 把 llvm 里面的命令封装一份放到 /bin 目录下，只封装必要的工具
 # 必须用这种封装的方案，不能直接软链接过去
 essential_tools="clang clang++ clang-cpp ld.lld lldb llvm-addr2line llvm-ar llvm-cxxfilt llvm-nm llvm-objcopy llvm-objdump llvm-ranlib llvm-readelf llvm-size llvm-strings llvm-strip"
 for executable in $essential_tools; do
     cat <<EOF > /bin/$executable
 #!/bin/sh
-exec $llvm_bin/$executable "\$@"
+exec /opt/ohos-sdk/ohos/native/llvm/bin/$executable "\$@"
 EOF
     chmod 0755 /bin/$executable
 done
