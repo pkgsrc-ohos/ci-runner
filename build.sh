@@ -24,6 +24,7 @@ mkdir /opt/ohos-sdk
 tar -zxf ohos-sdk.tar.gz -C /opt/ohos-sdk
 cd /opt/ohos-sdk/ohos
 busybox unzip -q native-*.zip
+busybox unzip -q toolchains-*.zip
 
 # 把 llvm 里面的命令封装一份放到 /bin 目录下，只封装必要的工具
 # 必须用这种封装的方案，不能直接软链接过去
@@ -35,6 +36,9 @@ exec /opt/ohos-sdk/ohos/native/llvm/bin/$executable "\$@"
 EOF
     chmod 0755 /bin/$executable
 done
+
+# 签名工具软链接到 /bin 目录下
+ln -s /opt/ohos-sdk/ohos/toolchains/lib/binary-sign-tool /bin/binary-sign-tool
 
 # 对 llvm 进行软链接，生成 cc、gcc、ld、binutils
 cd /bin
