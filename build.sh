@@ -26,6 +26,10 @@ cd /opt/ohos-sdk/ohos
 busybox unzip -q native-*.zip
 busybox unzip -q toolchains-*.zip
 
+# ohos-sdk 官方打出来的包有问题，没有可执行权限，规避一下，自己加上
+chmod 0755 /opt/ohos-sdk/ohos/native/llvm/bin/*
+chmod 0755 /opt/ohos-sdk/ohos/toolchains/lib/binary-sign-tool
+
 # 把 llvm 里面的命令封装一份放到 /bin 目录下，只封装必要的工具
 # 必须用这种封装的方案，不能直接软链接过去
 essential_tools="clang clang++ clang-cpp ld.lld lldb llvm-addr2line llvm-ar llvm-cxxfilt llvm-nm llvm-objcopy llvm-objdump llvm-ranlib llvm-readelf llvm-size llvm-strings llvm-strip"
