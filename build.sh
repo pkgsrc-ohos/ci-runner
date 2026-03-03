@@ -31,7 +31,7 @@ chmod 0755 /opt/ohos-sdk/ohos/native/llvm/bin/*
 chmod 0755 /opt/ohos-sdk/ohos/toolchains/lib/binary-sign-tool
 
 # 把 llvm 里面的命令封装一份放到 /bin 目录下，只封装必要的工具
-# 必须用这种封装的方案，不能直接软链接过去
+# 由于 clang 驱动器经过软链接之后不能正常找到 sysroot，为了照顾 clang，全部都做成了封装脚本，而不是软链接
 essential_tools="clang clang++ clang-cpp ld.lld lldb llvm-addr2line llvm-ar llvm-cxxfilt llvm-nm llvm-objcopy llvm-objdump llvm-ranlib llvm-readelf llvm-size llvm-strings llvm-strip"
 for executable in $essential_tools; do
     cat <<EOF > /bin/$executable
@@ -41,7 +41,7 @@ EOF
     chmod 0755 /bin/$executable
 done
 
-# 签名工具软链接到 /bin 目录下
+# 把签名工具软链接到 /bin 目录下
 ln -s /opt/ohos-sdk/ohos/toolchains/lib/binary-sign-tool /bin/binary-sign-tool
 
 # 对 llvm 进行软链接，生成 cc、gcc、ld、binutils
